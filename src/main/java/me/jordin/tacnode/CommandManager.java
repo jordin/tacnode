@@ -170,9 +170,10 @@ public class CommandManager {
     }
 
     public <T> void overrideParser(String command, Class<T> clazz, ArgumentParser<T> parser) {
+        String casedCommand = command;
         command = command.toLowerCase();
         if (!this.commandData.containsKey(command)) {
-            this.commandData.put(command, new CommandData(this, command));
+            this.commandData.put(command, new CommandData(this, casedCommand));
         }
         this.commandData.get(command).overrideArgumentParser(clazz, parser);
     }
