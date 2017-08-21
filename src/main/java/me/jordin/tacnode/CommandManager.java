@@ -14,6 +14,7 @@ import me.jordin.tacnode.parsers.ArgumentParserFactory;
 import me.jordin.tacnode.parsers.string.RawCommandParser;
 import me.jordin.tacnode.util.CommandCache;
 import me.jordin.tacnode.util.CommandSplitter;
+import me.jordin.tacnode.util.ConsumptionResult;
 import me.jordin.tacnode.wrappers.string.RawCommand;
 
 import java.lang.reflect.Method;
@@ -90,6 +91,15 @@ public class CommandManager {
         return cache.getEncapsulator() != null;
     }
 
+    public ConsumptionResult consume(String command) {
+        CommandCache cache = getCommandCache(command);
+        Iterator<String> arguments = cache.getArgs().iterator();
+
+        if (cache.getEncapsulator() != null) {
+            return cache.getEncapsulator().consume(arguments);
+        }
+        return ConsumptionResult.NOT_ENOUGH;
+    }
 
     public List<String> provideSuggestions(String command) {
         return ImmutableList.copyOf(new HashSet<>(provideSuggestionsWithDuplicates(command)));
