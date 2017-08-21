@@ -32,6 +32,11 @@ public class SimpleCommandManager extends CommandManager {
         return registerCommand(consumer, command, "", new String[] { param }, description, classA);
     }
 
+    public <A> CommandData registerCommand(String command, String[] params, String description,
+                                           Class<A> classA, Consumer<A> consumer) {
+        return registerCommand(consumer, command, "", params, description, classA);
+    }
+
     public <A> CommandData registerCommand(String command, String subCommand, String param, String description,
                                            Class<A> classA, Consumer<A> consumer) {
         return registerCommand(consumer, command, subCommand, new String[] { param }, description, classA);

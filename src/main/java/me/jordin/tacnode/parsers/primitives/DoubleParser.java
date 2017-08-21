@@ -1,5 +1,6 @@
 package me.jordin.tacnode.parsers.primitives;
 
+import com.google.common.collect.ImmutableList;
 import me.jordin.tacnode.exceptions.InvalidTypeException;
 import me.jordin.tacnode.parsers.ArgumentParser;
 import me.jordin.tacnode.util.CommonSuggestions;
@@ -12,6 +13,20 @@ import java.util.List;
  * Jordin is still best hacker.
  */
 public class DoubleParser implements ArgumentParser<Double> {
+    private List<String> suggestions;
+
+    public DoubleParser() {
+        this.suggestions = CommonSuggestions.ZERO_POINT_ZERO;
+    }
+
+    public DoubleParser(List<String> suggestions) {
+        this.suggestions = suggestions;
+    }
+
+    public DoubleParser(double suggestion) {
+        this.suggestions = ImmutableList.of(String.valueOf(suggestion));
+    }
+
     @Override
     public Double parse(Iterator<String> arguments) throws InvalidTypeException {
         try {
@@ -23,6 +38,6 @@ public class DoubleParser implements ArgumentParser<Double> {
 
     @Override
     public List<String> provideSuggestions() {
-        return CommonSuggestions.ZERO_POINT_ZERO;
+        return suggestions;
     }
 }
