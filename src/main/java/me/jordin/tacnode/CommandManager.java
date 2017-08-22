@@ -176,6 +176,10 @@ public class CommandManager {
 
         CommandData data = commandData.get(commandID);
 
+        if (data == null) {
+            return null;
+        }
+
         if (arguments.isEmpty() || !data.hasSubCommands()) {
             return data.getCommandEncapsulator("", arguments);
         } else {
