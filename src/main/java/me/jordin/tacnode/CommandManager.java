@@ -5,6 +5,7 @@ import me.jordin.tacnode.annotations.Command;
 import me.jordin.tacnode.annotations.CommandDescription;
 import me.jordin.tacnode.annotations.CommandParameters;
 import me.jordin.tacnode.annotations.SubCommand;
+import me.jordin.tacnode.exceptions.CommandNotFoundException;
 import me.jordin.tacnode.exceptions.IncompleteArgumentsException;
 import me.jordin.tacnode.exceptions.InvalidTypeException;
 import me.jordin.tacnode.info.CommandInfo;
@@ -81,8 +82,11 @@ public class CommandManager {
         return data;
     }
 
-    public boolean callCommand(String command) throws IncompleteArgumentsException, InvalidTypeException {
+    public boolean callCommand(String command) throws CommandNotFoundException, IncompleteArgumentsException, InvalidTypeException {
         CommandCache cache = getCommandCache(command);
+        if (cache == null) {
+            throw new CommandNotFoundException(command);
+        }
         Iterator<String> arguments = cache.getArgs().iterator();
 
         if (cache.getEncapsulator() != null) {
@@ -93,6 +97,9 @@ public class CommandManager {
 
     public ConsumptionResult consume(String command) {
         CommandCache cache = getCommandCache(command);
+        if (cache == null) {
+            return ConsumptionResult.NOT_ENOUGH;
+        }
         Iterator<String> arguments = cache.getArgs().iterator();
 
         if (cache.getEncapsulator() != null) {
@@ -156,6 +163,9 @@ public class CommandManager {
         if (!COMMAND_CACHE.containsKey(command)) {
             List<String> args = CommandSplitter.split(command);
             CommandEncapsulator encapsulator = getCommandEncapsulator(args);
+            if (encapsulator == null) {
+                return null;
+            }
             COMMAND_CACHE.put(command, new CommandCache(ImmutableList.copyOf(args), encapsulator));
         }
         return COMMAND_CACHE.get(command);
