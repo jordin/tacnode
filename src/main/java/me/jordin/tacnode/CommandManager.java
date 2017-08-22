@@ -152,7 +152,12 @@ public class CommandManager {
     }
 
     public List<CommandInfo> getInfo(String command) {
-        return this.commandData.get(command.toLowerCase()).getCommandInfo().getInfo();
+        CommandData data = this.commandData.get(command.toLowerCase());
+        if (data == null) {
+            return ImmutableList.of();
+        }
+
+        return data.getCommandInfo().getInfo();
     }
 
     public CommandData getCommandData(String command) {
