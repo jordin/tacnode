@@ -20,7 +20,7 @@ public class GenericEnumParser<E extends Enum<E>> implements ArgumentParser<E> {
     private Map<String, E> options;
 
     public GenericEnumParser(Class<? extends E> anEnum) {
-        this.expected = anEnum.getSimpleName();
+        this.expected = getSimpleName(anEnum);
 
         this.options = new HashMap<>();
         ImmutableList.Builder<String> suggestionBuilder = ImmutableList.builder();
@@ -56,5 +56,14 @@ public class GenericEnumParser<E extends Enum<E>> implements ArgumentParser<E> {
     @Override
     public List<String> provideSuggestions() {
         return this.suggestions;
+    }
+
+    private static String getSimpleName(Class<?> clazz) {
+        String name = clazz.getName();
+
+        name = name.substring(name.lastIndexOf('.') + 1);
+        name = name.substring(name.lastIndexOf("$") + 1);
+
+        return name;
     }
 }
