@@ -77,9 +77,7 @@ public class CommandEncapsulator {
         return minimumArgsRequired;
     }
 
-    public List<String> provideSuggestions(List<String> args) throws InvalidTypeException {
-        boolean lastArgIsSpace = args.remove("");
-
+    public List<String> provideSuggestions(List<String> args, boolean lastArgIsSpace) throws InvalidTypeException {
         Iterator<String> arguments = args.iterator();
 
         int i = 0;

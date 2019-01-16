@@ -90,9 +90,10 @@ public class CommandData implements ArgumentParserProvider {
 
     public List<String> provideSuggestions(String subCommand, List<String> arguments) {
         List<String> suggestions = new ArrayList<>();
+        boolean lastArgIsSpace = arguments.remove("");
         this.commandEncapsulators.get(subCommand.toLowerCase()).forEach(commandEncapsulator -> {
             try {
-                suggestions.addAll(commandEncapsulator.provideSuggestions(arguments));
+                suggestions.addAll(commandEncapsulator.provideSuggestions(arguments, lastArgIsSpace));
             } catch (InvalidTypeException ignored) {
             }
         });
