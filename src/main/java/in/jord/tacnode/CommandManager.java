@@ -20,6 +20,7 @@ import in.jord.tacnode.annotations.CommandParameters;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Created by Jordin on 8/10/2017.
@@ -29,6 +30,7 @@ public class CommandManager {
     private ArgumentParserFactory parserFactory = new ArgumentParserFactory();
     protected Map<String, CommandData> commandData = new HashMap<>();
     protected Set<String> commands = new HashSet<>();
+    private Consumer<Exception> exceptionHook;
 
     private Map<String, CommandCache> COMMAND_CACHE = new HashMap<>();
 
@@ -90,7 +92,17 @@ public class CommandManager {
         Iterator<String> arguments = cache.getArgs().iterator();
 
         if (cache.getEncapsulator() != null) {
-            cache.getEncapsulator().execute(arguments);
+            try {
+                cache.getEncapsulator().execute(arguments);
+            } catch (InvalidTypeException | IncompleteArgumentsException e) {
+                throw e;
+            } catch (Exception e) {
+                if (this.exceptionHook != null) {
+                    this.exceptionHook.accept(e);
+                } else {
+                    throw e;
+                }
+            }
         }
         return cache.getEncapsulator() != null;
     }
@@ -217,5 +229,9 @@ public class CommandManager {
 
     public ArgumentParserFactory getParserFactory() {
         return this.parserFactory;
+    }
+
+    public void setExceptionHook(Consumer<Exception> exceptionHook) {
+        this.exceptionHook = exceptionHook;
     }
 }

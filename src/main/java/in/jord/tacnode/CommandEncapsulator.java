@@ -55,7 +55,7 @@ public class CommandEncapsulator {
         try {
             method.invoke(this.instance, parsed);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
