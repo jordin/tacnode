@@ -9,7 +9,6 @@ import in.jord.tacnode.parsers.generic.GenericEnumParser;
 import in.jord.tacnode.parsers.primitives.*;
 import in.jord.tacnode.parsers.other.ColourParser;
 import in.jord.tacnode.parsers.other.UUIDParser;
-import me.jordin.tacnode.parsers.primitives.*;
 import in.jord.tacnode.parsers.string.ConsumedStringParser;
 import in.jord.tacnode.parsers.string.StringParser;
 import in.jord.tacnode.wrappers.string.ConsumedString;
