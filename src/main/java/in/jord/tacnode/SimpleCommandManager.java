@@ -11,9 +11,9 @@ import java.util.function.Consumer;
  * Jordin is still best hacker.
  */
 // Sorry
-public class SimpleCommandManager extends CommandManager {
+public class SimpleCommandManager<T> extends CommandManager<T> {
     private CommandData registerCommand(Object instance, String command, String subCommand, String[] params, String description, Class<?>... classes) {
-        CommandData data = commandData.getOrDefault(command.toLowerCase(), new CommandData(this, command));
+        CommandData data = (CommandData) commandData.getOrDefault(command.toLowerCase(), new CommandData(this, command));
 
         CommandEncapsulator encapsulator = new CommandEncapsulator(data, instance, findAcceptMethod(instance.getClass()), classes);
         data.addCommandData(subCommand, params, description, encapsulator);

@@ -25,17 +25,24 @@ import java.util.function.Consumer;
 /**
  * Created by Jordin on 8/10/2017.
  * Jordin is still best hacker.
+ *
+ * T = return type
  */
-public class CommandManager {
+public class CommandManager<T> {
     private ArgumentParserFactory parserFactory = new ArgumentParserFactory();
     protected Map<String, CommandData> commandData = new HashMap<>();
     protected Set<String> commands = new HashSet<>();
     private Consumer<Exception> exceptionHook;
+    private Class<T> returnClass;
 
     private Map<String, CommandCache> COMMAND_CACHE = new HashMap<>();
 
     public CommandManager() {
         addParser(RawCommand.class, new RawCommandParser(this));
+    }
+
+    public CommandManager(Class<T> returnClass) {
+        this.returnClass = returnClass;
     }
 
     public void registerCommands(Object instance) {
@@ -84,7 +91,7 @@ public class CommandManager {
         return data;
     }
 
-    public boolean callCommand(String command) throws CommandNotFoundException, IncompleteArgumentsException, InvalidTypeException {
+    public CommandCallResult<T> callCommand(String command) throws CommandNotFoundException, IncompleteArgumentsException, InvalidTypeException {
         CommandCache cache = getCommandCache(command);
         if (cache == null) {
             throw new CommandNotFoundException(command);
@@ -92,7 +99,13 @@ public class CommandManager {
         Iterator<String> arguments = cache.getArgs().iterator();
 
         if (cache.getEncapsulator() != null) {
+
+
             try {
+                if (cache.getEncapsulator().getMethod().getReturnType() == this.returnClass) {
+                    return new CommandCallResult<>(true, (T) cache.getEncapsulator().execute(arguments));
+                }
+
                 cache.getEncapsulator().execute(arguments);
             } catch (InvalidTypeException | IncompleteArgumentsException e) {
                 throw e;
@@ -104,7 +117,8 @@ public class CommandManager {
                 }
             }
         }
-        return cache.getEncapsulator() != null;
+
+        return new CommandCallResult<>(cache.getEncapsulator() != null, null);
     }
 
     public ConsumptionResult consume(String command) {
