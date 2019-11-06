@@ -46,14 +46,14 @@ public class CommandEncapsulator {
         this.method.setAccessible(true);
     }
 
-    public void execute(Iterator<String> arguments) throws IncompleteArgumentsException, InvalidTypeException {
+    public Object execute(Iterator<String> arguments) throws IncompleteArgumentsException, InvalidTypeException {
         Object[] parsed = new Object[paramTypes.length];
         int i = 0;
         for (Class<?> paramType : paramTypes) {
             parsed[i++] = handler.parseArgument(paramType, arguments);
         }
         try {
-            method.invoke(this.instance, parsed);
+            return method.invoke(this.instance, parsed);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
@@ -106,5 +106,9 @@ public class CommandEncapsulator {
         }
 
         return ImmutableList.of();
+    }
+
+    public Method getMethod() {
+        return method;
     }
 }
