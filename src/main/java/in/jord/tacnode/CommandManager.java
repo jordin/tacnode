@@ -50,34 +50,42 @@ public class CommandManager<T> {
     }
 
     public List<CommandData> registerCommands(String overriddenCommand, Object instance) {
-        List<CommandData> commandData = new ArrayList<>();
+        List<CommandData> commandData = new ArrayList<>(); // FIXME: why is this a List?
         boolean overriding = overriddenCommand != null && !overriddenCommand.isEmpty();
 
-        for (Method method : instance.getClass().getDeclaredMethods()) {
-            if (method.isAnnotationPresent(Command.class) || (overriding && method.isAnnotationPresent(SubCommand.class))) {
-                String command = overriddenCommand;
-                String subCommand = "";
-                String[] parameters = new String[0];
-                String description = "";
-                if (method.isAnnotationPresent(Command.class) && !method.getAnnotation(Command.class).value().isEmpty()) {
-                    command = method.getAnnotation(Command.class).value();
-                }
-                if (method.isAnnotationPresent(SubCommand.class)) {
-                    subCommand = method.getAnnotation(SubCommand.class).value();
-                }
-                if (method.isAnnotationPresent(CommandParameters.class)) {
-                    parameters = method.getAnnotation(CommandParameters.class).value();
-                }
-                if (method.isAnnotationPresent(CommandDescription.class)) {
-                    description = method.getAnnotation(CommandDescription.class).value();
-                }
+        Class<?> clazz = instance.getClass();
 
-                CommandData data = registerCommand(instance, method, command, subCommand, parameters, description);
-                if (!commandData.contains(data)) {
-                    commandData.add(data);
+        while (clazz != Object.class) {
+            for (Method method : clazz.getDeclaredMethods()) {
+                if (method.isAnnotationPresent(Command.class) || (overriding && method.isAnnotationPresent(SubCommand.class))) {
+                    String command = overriddenCommand;
+                    String subCommand = "";
+                    String[] parameters = new String[0];
+                    String description = "";
+                    if (method.isAnnotationPresent(Command.class) && !method.getAnnotation(Command.class).value().isEmpty()) {
+                        command = method.getAnnotation(Command.class).value();
+                    }
+                    if (method.isAnnotationPresent(SubCommand.class)) {
+                        subCommand = method.getAnnotation(SubCommand.class).value();
+                    }
+                    if (method.isAnnotationPresent(CommandParameters.class)) {
+                        parameters = method.getAnnotation(CommandParameters.class).value();
+                    }
+                    if (method.isAnnotationPresent(CommandDescription.class)) {
+                        description = method.getAnnotation(CommandDescription.class).value();
+                    }
+
+                    CommandData data = registerCommand(instance, method, command, subCommand, parameters, description);
+                    // FIXME: why do we care about duplicates if we just registered it anyway?
+                    if (!commandData.contains(data)) {
+                        commandData.add(data);
+                    }
                 }
             }
+
+            clazz = clazz.getSuperclass();
         }
+
         return ImmutableList.copyOf(commandData);
     }
 
